@@ -348,7 +348,7 @@ function openVideo(anchor) {
   const modal = makeModal()
   const video = document.createElement("video")
   video.controls = true
-  video.style.maxHeight = "35rem"
+  // video.style.maxHeight = "35rem"
 
   anchor.append(modal)
   modal.firstChild.firstChild.append(video)
@@ -356,6 +356,6 @@ function openVideo(anchor) {
 
   video.src = anchor.href
 
-  modal.style.zIndex = 2
+  modal.style.zIndex = 20
   self.addEventListener("click", e => e.target === modal && (modal.remove()))
 }
