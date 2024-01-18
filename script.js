@@ -153,7 +153,7 @@ function handleSearch() {
     const searchObject = parseSearchContent(searchContent)
 
     updateURL(searchContent)
-    
+
     if (!isValidSearchObject(searchObject)) {
       flashSearch()
       return console.log("Invalid search object:", searchObject)
@@ -252,6 +252,13 @@ function fillTable(animeData) {
       const a = document.createElement("a")
       a.innerText = e.slug
       a.href = e.animethemeentries[0].videos[0].link
+
+      a.draggable = false
+      a.onclick = e => {
+        e.preventDefault()
+        openVideo(e.target)
+      }
+      
       return a
     })
   }
@@ -281,7 +288,9 @@ const searchInput = document.getElementById('search-input');
 
 const updateURL = (query) => {
   // window.history.pushState({}, document.title, `?${urlParams.toString()}`);
-  window.history.pushState({}, document.title, `?q=${searchInput.value}`);
+  if (query !== new URLSearchParams(window.location.search).get("q")) {
+    window.history.pushState({}, document.title, `?q=${searchInput.value}`);
+  }
 };
 
 // Function to check for a search query in the URL when the page loads
@@ -315,4 +324,38 @@ const checkURLForQuery = () => {
 
 // Check for a search query in the URL when the page loads
 window.addEventListener('DOMContentLoaded', checkURLForQuery);
+window.addEventListener('popstate', checkURLForQuery)
 
+function makeModal() {
+  const div1 = document.createElement("div")
+  const div2 = document.createElement("div")
+  const div3 = document.createElement("div")
+
+  div1.style.cssText = "display: none; position: fixed; top: 0px; left: 0px; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);"
+    + " z-index: 1; align-items: center; justify-content: center;"
+  // div2.style.cssText = "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgb(255, 255, 255);"
+  div2.style.cssText = "background-color: rgb(255, 255, 255); max-width: 85%; text-align: center;"
+    + " padding: 20px; max-height: 80%; overflow-y: auto; min-height: 15%; min-width: 15%; background-color: #333; color: #fff;"
+
+  self.addEventListener("click", e => e.target === div1 && (div1.style.display = "none"))
+
+  div1.append(div2)
+  div2.append(div3)
+
+  return div1
+}
+function openVideo(anchor) {
+  const modal = makeModal()
+  const video = document.createElement("video")
+  video.controls = true
+  video.style.maxHeight = "35rem"
+
+  anchor.append(modal)
+  modal.firstChild.firstChild.append(video)
+  modal.style.display = "flex"
+
+  video.src = anchor.href
+
+  modal.style.zIndex = 2
+  self.addEventListener("click", e => e.target === modal && (modal.remove()))
+}

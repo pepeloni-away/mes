@@ -189,6 +189,11 @@ td:nth-child(3) a {
     border-radius: 5px;
 }
 
+video {
+    max-width: 100%;
+    max-height: 60vh;
+}
+
 /* Responsive styles for mobile */
 @media screen and (max-width: 600px) {
     th, td {
