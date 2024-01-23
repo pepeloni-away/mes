@@ -5,7 +5,7 @@ const placeholders = [
 ]
 
 function cyclePlaceholders() {
-  const search = document.querySelector(".search-bar > input")
+  const search = document.querySelector(".search_bar > input")
 
   search.placeholder = placeholders[0]
   setInterval(change, 5e3)
@@ -18,22 +18,23 @@ function cyclePlaceholders() {
 cyclePlaceholders()
 
 function keyboardShortcuts() {
-  const search = document.querySelector(".search-bar > input")
+  const search = document.querySelector(".search_bar > input")
   self.addEventListener("keydown", e => {
     if (e.key === "/" && e.target !== search) {
       e.preventDefault()
+      // put the cursor after existing text
+      search.selectionStart = search.selectionEnd = search.value.length;
       search.focus()
-      search.value = search.value
     }
   })
 }
 keyboardShortcuts()
 
 function suggestLocalNames() {
-  const searchInput = document.querySelector("#search-input")
-  const suggestionsList = document.querySelector("#suggestions")
+  const searchInput = document.querySelector(".search_input")
+  const suggestionsList = document.querySelector(".suggestions")
 
-  searchInput.addEventListener("input", function() {
+  searchInput.addEventListener("input", function () {
     const input = searchInput.value.trim()
     if (input.startsWith("l/")) {
       showSuggestions(input.slice(2))
@@ -49,7 +50,7 @@ function suggestLocalNames() {
     suggestions.forEach(suggestion => {
       const listItem = document.createElement('li')
       listItem.textContent = suggestion
-      listItem.addEventListener('click', function() {
+      listItem.addEventListener('click', function () {
         searchInput.value = suggestion
         hideSuggestions()
         search()
@@ -79,13 +80,13 @@ function isLocalnameValid(localstorageKey) {
   return isValidSearchObject(t)
 }
 function isValidSearchObject(searchObject) {
-  const databases = {
-    "m": "MyAnimeList",
-    "a": "AniList",
-    "k": "Kitsu",
-  }
-  const database = [databases[searchObject.database]]
-  if (!database) return false
+  const databases = [
+    "MyAnimeList",
+    "AniList",
+    "Kitsu",
+  ]
+
+  if (!databases.includes(searchObject.database)) return false
   if (!Array.isArray(searchObject.ids)) return false
   if (searchObject.ids.length < 1) return false
   if (!searchObject.ids.every(Number.isInteger)) return false
@@ -94,11 +95,14 @@ function isValidSearchObject(searchObject) {
 }
 
 function navigateSuggestions() {
-  const searchInput = document.getElementById('search-input')
+  const searchInput = document.querySelector('.search_input')
   let selected, first, last, suggestionItems
 
-  searchInput.addEventListener('keydown', function(e) {
-    suggestionItems = document.querySelectorAll('#suggestions li')
+  searchInput.addEventListener('keydown', function (e) {
+    suggestionItems = document.querySelectorAll('.suggestions li')
+
+    if (suggestionItems.length === 0) return
+
     first = suggestionItems[0]
     last = suggestionItems[suggestionItems.length - 1]
     if (e.key === 'Tab') {
@@ -131,7 +135,7 @@ function navigateSuggestions() {
 navigateSuggestions()
 
 function handleSearch() {
-  const searchInput = document.querySelector("#search-input")
+  const searchInput = document.querySelector(".search_input")
   searchInput.addEventListener("keydown", handleKeydown)
 
   function handleKeydown(e) {
@@ -140,7 +144,7 @@ function handleSearch() {
     if (e.key === "Escape") {
       e.target.value = ""
       e.target.blur()
-      document.querySelector("#suggestions").style.display = "none"
+      document.querySelector(".suggestions").style.display = "none"
     }
 
     if (e.key === "Enter") {
@@ -149,7 +153,7 @@ function handleSearch() {
 
   }
   function search() {
-    const searchContent = document.querySelector("#search-input").value
+    const searchContent = document.querySelector(".search_input").value
     const searchObject = parseSearchContent(searchContent)
 
     updateURL(searchContent)
@@ -194,7 +198,7 @@ function parseSearchContent(text) {
 function getAnimethemes(o) {
   // i think i shoould split ids into multiple calls.. can the url get too long with enough ids? works with my almost 600
   const ids = o.ids.join()
-  const url = `https://api.animethemes.moe/anime?filter[has]=resources&filter[site]=${o.database}&filter[external_id]=${ids}&include=animethemes.animethemeentries.videos&page[size]=100`
+  const url = `https://api.animethemes.moe/anime?filter[has]=resources&filter[site]=${o.database}&filter[external_id]=${ids}&include=animethemes.animethemeentries.videos,animethemes.song&page[size]=100`
   let fullResponse = []
 
   function getResponse(url) {
@@ -250,7 +254,8 @@ function fillTable(animeData) {
   function makeAnchors(animethemesObj) {
     return animethemesObj.map(e => {
       const a = document.createElement("a")
-      a.innerText = e.slug
+      // a.innerText = e.slug
+      a.innerText = e.song.title
       a.href = e.animethemeentries[0].videos[0].link
 
       a.draggable = false
@@ -258,22 +263,22 @@ function fillTable(animeData) {
         e.preventDefault()
         openVideo(e.target)
       }
-      
+
       return a
     })
   }
 }
 
 function suspendSearch() {
-  const cover = document.querySelector("#loading-overlay")
+  const cover = document.querySelector(".loading_overlay")
   cover.style.display = ""
 }
 function releaseSearch() {
-  const cover = document.querySelector("#loading-overlay")
+  const cover = document.querySelector(".loading_overlay")
   cover.style.display = "none"
 }
 function flashSearch() {
-  const searchInput = document.getElementById('search-input');
+  const searchInput = document.querySelector('.search_input');
 
   searchInput.classList.add('flash');
 
@@ -283,44 +288,26 @@ function flashSearch() {
 }
 
 
-
-const searchInput = document.getElementById('search-input');
-
 const updateURL = (query) => {
-  // window.history.pushState({}, document.title, `?${urlParams.toString()}`);
+  const searchInput = document.querySelector('.search_input');
+  const baseUrl = location.origin + location.pathname.slice(0, -1)
+  if (query === "") return
   if (query !== new URLSearchParams(window.location.search).get("q")) {
-    window.history.pushState({}, document.title, `?q=${searchInput.value}`);
+    window.history.pushState({}, document.title, `${baseUrl}?q=${searchInput.value}`);
   }
 };
 
-// Function to check for a search query in the URL when the page loads
 const checkURLForQuery = () => {
-  // Get the current URL parameters
+  const searchInput = document.querySelector('.search_input');
   const urlParams = new URLSearchParams(window.location.search);
 
-  // Check if the 'q' parameter exists
   if (urlParams.has('q')) {
-    // Retrieve the search query from the URL
     const searchQuery = urlParams.get('q');
 
-    // Update the search input value
     searchInput.value = searchQuery;
     search()
-
-    // Perform any additional actions based on the search query if needed
-
-    // For example, trigger a search with the query
-    // performSearch(searchQuery);
   }
 };
-
-// Event listener for the search input
-// searchInput.addEventListener('input', (event) => {
-//   const query = event.target.value;
-
-//   // Update the URL with the search query
-//   updateURL(query);
-// });
 
 // Check for a search query in the URL when the page loads
 window.addEventListener('DOMContentLoaded', checkURLForQuery);
@@ -348,9 +335,9 @@ function openVideo(anchor) {
   const modal = makeModal()
   const video = document.createElement("video")
   video.controls = true
-  // video.style.maxHeight = "35rem"
 
-  anchor.append(modal)
+  // anchor.append(modal) // this makes the browser think we are constantly hovering over the anchor 
+  anchor.parentElement.append(modal)
   modal.firstChild.firstChild.append(video)
   modal.style.display = "flex"
 

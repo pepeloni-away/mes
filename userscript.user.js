@@ -6,7 +6,8 @@
 // @version     1.0
 // @description 1/17/2024, 11:39:01 AM
 // @grant       GM_xmlhttpRequest
-// @match       file:///C:/Users/pploni/Desktop/themes.moe2/index.html
+// @match       https://pepeloni-away.github.io/mes/
+// @match       http://192.168.0.169:5500/  
 // ==/UserScript==
 // @run-at      document-start
 
