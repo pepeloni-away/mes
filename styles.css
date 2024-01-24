@@ -7,9 +7,15 @@
 }
 
 :root {
+  /* --color3h: 230; */
+  --color3h: 250;
+  --color3s: 60%;
+  --color3l: 33%;
+
   --color1: hsl(180, 60%, 33%);
   --color2: hsl(205, 60%, 33%);
-  --color3: hsl(230, 60%, 33%);
+  --color3: hsl(250, 60%, 33%);
+  /* --color3: hsl(var(--color3h), var(--color3s), var(--color3l)); */
 
   --dark: #181a1b;
   --white: white;
@@ -17,16 +23,15 @@
 
 input {
   /* from https://moderncss.dev/custom-css-styles-for-form-inputs-and-textareas/ */
-  --input-border: #8b8a8b;
-  --input-focus-h: 245;
-  --input-focus-s: 100%;
-  --input-focus-l: 42%;
+  --input-border: var(--color3);
+  --input-focus-h: var(--color3h);
+  --input-focus-s: var(--color3s);
+  --input-focus-l: var(--color3l);
 
   font-size: 16px;
   font-size: max(16px, 1em);
   font-family: inherit;
   padding: 0.25em 0.5em;
-  /* background-color: #fff; */
   background-color: var(--dark);
   border: 2px solid var(--input-border);
   border-radius: 4px;
@@ -41,11 +46,17 @@ input:focus {
   outline: 3px solid transparent;
 }
 
-
-
-
 body {
   background-color: var(--color1);
+  color: var(--white);
+}
+
+body:has(.modal) {
+  overflow: hidden;
+}
+
+main {
+  padding: 1.5rem clamp(1rem, 5%, 3rem);
   color: var(--white);
 }
 
@@ -53,9 +64,7 @@ body {
 
 
 
-
-
-
+/* header area */
 header {
   background-color: var(--color2);
   padding: 10px;
@@ -63,7 +72,6 @@ header {
 }
 
 nav {
-  /* --nav_button_size: clamp(1rem, 1.5rem, 1.5rem); */
   --nav_button_size: 1.5rem;
 
   display: flex;
@@ -80,12 +88,18 @@ nav {
   width: 100%;
   padding: 8px;
   color: inherit;
+  transition: 180ms background-color ease-in-out;
+}
+
+.search_input.flash {
+  background-color: red;
 }
 
 .github,
 .github>svg {
   height: var(--nav_button_size);
 }
+
 .home {
   text-decoration: none;
   color: inherit;
@@ -95,65 +109,266 @@ nav {
 .github {
   font-size: var(--nav_button_size);
   margin: 10px;
-  fill: white;
+  fill: var(--white);
 }
 
-
-/* search suggestion list */
 .suggestions:not(:empty) {
   position: absolute;
   top: 100%;
   left: 0;
   width: 100%;
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: var(--color2);
+  border: 1px solid var(--color3);
   list-style: none;
 }
-.suggestions > li {
+
+.suggestions>li {
   padding: 8px;
-  border-bottom: 1px solid #eee;
-  color: black;
+  border-bottom: 1px solid var(--color3);
+  cursor: pointer;
+
+  display: flex;
+  width: 100%;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .suggestions li:last-child {
   border-bottom: none;
 }
-/* -------------------------- */
 
-
-
-
-
-
-
-main {
-  padding: 1.5rem clamp(1rem, 5%, 3rem);
-  color: white;
-}
-tr:nth-child(2), td:nth-child(2) {
-  width: 12ch;
+.suggestions>li>button {
+  background-color: var(--color1);
+  border: none;
+  padding: 0.25em 0.5em;
+  margin-left: auto;
+  width: fit-content;
 }
 
-
-
-
-
-
-
-/* search loading overlay */
 .loading_overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(168, 151, 151, 0.8);
+  /* background: rgba(168, 151, 151, 0.8); */
+  background-color: var(--color1);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
   cursor: not-allowed;
+  user-select: none;
 }
+
+/* -----------end header area--------------- */
+
+
+
+
+
+
+/* table */
+table {
+  width: 100%;
+  /* border-collapse: collapse; */
+}
+
+td,
+th {
+  border: 2px solid var(--color3)
+}
+
+td:last-child {
+  --min: 8ch;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  /*   gap: 1rem; */
+
+
+  justify-content: center;
+  /*   align-items: center; */
+}
+
+td:last-child>* {
+  flex: 1 1 var(--min);
+  /* padding: 5px 0; */
+  margin: 2px;
+  background-color: var(--color2);
+  color: inherit;
+  text-align: center;
+  /*! min-height: 5ch; */
+  text-decoration: none;
+  /* without this stuff with 1 opening and little text won't fill the tr height */
+  padding: clamp(1rem, 5%, 3rem);
+}
+
+tr:nth-child(2),
+td:nth-child(2) {
+  width: 12ch;
+}
+
+/* caption:has(~tbody:not(:empty))>p {
+  display: none;
+}
+
+caption:has(~tbody:empty)>div {
+  display: none;
+} */
+
+/* table on mobile */
+@media screen and (max-width: 600px) {
+  th, td {
+      display: block;
+      width: 100%;
+
+  }
+  
+  td:first-child{
+      display: flex;
+  }
+
+  td:first-child:after {
+      content: attr(season);
+      white-space: nowrap;
+      word-break: keep-all;
+      padding: .1rem;
+      background-color: var(--dark);
+/*         float: right; */
+      margin-left: auto;
+  }
+  
+  td:nth-child(2), th:nth-child(2) {
+      display: none;
+  }
+  
+}
+/* ----end mobile table ---- */
+
+
+/* -----end table ----- */
+
+
+
+
+
+/* modal */
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal>div {
+  max-width: 85%;
+  max-height: 80%;
+  min-height: 15%;
+  min-width: 15%;
+
+  display: grid;
+  gap: 1rem;
+  grid-template-areas:
+    ". t . . i ."
+    ". v v v v ."
+}
+
+.modal>div>.title {
+  grid-area: t;
+}
+
+.modal>div>.info {
+  grid-area: i;
+}
+
+video {
+  grid-area: v;
+  object-fit: contain;
+  max-width: 100%;
+  max-height: min(100%, 70vh);
+  justify-self: center;
+}
+
+/* ----end modal---- */
+
+
+
+
+
+/* guide on main page */
+.guide {
+  --max-content-width: 65ch;
+  --breakout-difference: 0.2;
+
+  /*  Compute total allowed grid width to `--breakout-difference` 
+      larger than content area  */
+  --breakout-grid-width: calc(var(--max-content-width) + (var(--max-content-width) * var(--breakout-difference)));
+
+  display: grid;
+  grid-template-columns:
+    [grid-start] 1fr [content-start] minmax(min(100%, var(--max-content-width)),
+      1fr) [content-end] 1fr [grid-end];
+  width: min(100% - 2rem, var(--breakout-grid-width));
+  row-gap: 1rem;
+  margin: 5vb auto;
+}
+
+/* .guide > *:not(.breakout) { */
+.guide>* {
+  grid-column: content;
+}
+
+.guide>p:last-child,
+.guide>pre,
+.guide>h2 {
+  grid-column: grid;
+
+}
+
+.guide>pre {
+  white-space: pre-wrap;
+  background-color: var(--dark);
+  text-align: center;
+}
+
+.guide>p:last-child {
+  border: 2px dotted var(--white);
+  border-radius: 0.15em;
+  padding: 1rem;
+  background-color: var(--color3)
+}
+
+.guide>p:last-child>a {
+  color: var(--color1)
+}
+
+.guide>h2 {
+  border: 1px solid var(--color3);
+  padding: .5rem
+}
+
+.guide>h2>a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.guide .userscript {
+  font-size: 2rem;
+  /*     text-decoration: none; */
+  color: inherit
+}
+
+/* ------end guide ----- */
+
+
+
+
 
 /* spinner from https://codepen.io/AnoNewb/pen/JwypRN */
 spinner>div {
@@ -206,4 +421,75 @@ spinner .bounce2 {
   }
 }
 
-/* ----------------------------------------------------- */
+/* --------------------end spinner------------------------ */
+
+
+
+
+/* switch from https://codepen.io/ahmedhrayyan/pen/wRRGem */
+
+/*
+the animation here is for the opacity effect on the text content (ie. ON or OFF)
+*/
+@keyframes change-content {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.switch {
+  position: absolute;
+  /* make the checkbox unvisible using clip-path */
+  clip-path: circle(0%);
+  opacity: 0;
+}
+.switch + label {
+  display: inline-block;
+  margin: 20px;
+  width: 140px;
+  height: 60px;
+  position: relative;
+/*   border: 2px solid #607d8b; */
+  border: 2px solid;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 20px;
+  text-align: center;
+  /* for slider thumb */
+  /* for text content */
+    white-space: nowrap;
+}
+.switch + label:before, .switch + label:after {
+  display: inline-block;
+  position: absolute;
+}
+.switch + label:before {
+  content: "";
+  width: 46px;
+  height: 46px;
+  border-radius: 25px;
+  left: 5px;
+  top: 5px;
+  background: #607d8b;
+  transition: all 0.3s ease-in-out;
+}
+.switch + label:after {
+  display: inline-block;
+  content: "full names";
+  bottom: -30px;
+  /* to center it horizontally */
+  left: 50%;
+  transform: translateX(-50%);
+/*   color: #607d8b; */
+}
+.switch:checked + label:before {
+  left: 85px;
+}
+.switch:checked + label:after {
+  content: "short names";
+/*   color: #4caf50; */
+  animation: change-content 0.3s forwards linear;
+}
+/* ---end switch --- */

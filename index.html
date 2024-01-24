@@ -20,7 +20,10 @@
             <div class="bounce3"></div>
           </spinner>
         </div>
-        <input class="search_input" type="text" placeholder="mid/malid(s)">
+        <form id="searchForm" onsubmit="submitSearchForm(); return false;">
+          <input class="search_input" type="text" name="q" placeholder="mid/malid(s)" autocomplete="off">
+          <!-- <button type="submit">Search</button> -->
+        </form>
         <ul class="suggestions" style="display: none;"></ul>
       </div>
       <a href="https://github.com/pepeloni-away/mes" class="github">
@@ -35,68 +38,30 @@
   </header>
 
   <main>
-    <!-- <table>
-      <thead>
-        <tr>
-          <th>Anime</th>
-          <th>Season</th>
-          <th>Links</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr>
-          <td colspan="3">
-            <p>Guide/Intro</p>
-
-            So much text in here, this is a guide.
-            So much text in here, this is a guide.
-            So much text in here, this is a guide.
-            So much text in here, this is a guide.
-            So much text in here, this is a guide.
-            So much text in here, this is a guide.
-            So much text in here, this is a guide.
-            So much text in here, this is a guide.
-            So much text in here, this is a guide.
-            So much text in here, this is a guide.
-
-            <br>
-            <br>
-            <br>
-            Very much inspired by <a href="https://themes.moe">Themes.moe</a> and motivated by its out of date state
-            (nothing added since winter 2022). This page is not affiliated but uses the <a
-              href="https://api-docs.animethemes.moe">api</a> and videos provided for free by <a
-              href="https://animethemes.moe">AnimeThemes.moe</a>!
-
-          </td>
-
-
-        </tr>
-      </tbody>
-    </table> -->
     <div class="guide">
 
-        <p>Guide/Intro</p>
+      <h2>Mes allows you to see and share a collection of anime themes based on a list of anime ids from <a
+          href="https://myanimelist.net/">MyAnimeList</a>,
+        <a href="https://anilist.co/">AniList</a> or
+        <a href="https://kitsu.io/">Kitsu</a>.
+      </h2>
 
-        So much text in here, this is a guide.
-        So much text in here, this is a guide.
-        So much text in here, this is a guide.
-        So much text in here, this is a guide.
-        So much text in here, this is a guide.
-        So much text in here, this is a guide.
-        So much text in here, this is a guide.
-        So much text in here, this is a guide.
-        So much text in here, this is a guide.
-        So much text in here, this is a guide.
+      <p>You can make a list of ids yourself or use this <a class="userscript"
+          href="https://github.com/pepeloni-away/mes/raw/master/userscript.user.js">userscript</a> to fetch your ids
+        from one of the trackers above.</p>
+      <p>If you want to quiclky bring up a specific list you can save it to your browser's localStorage with the
+        following template:</p>
 
-        <br>
-        <br>
-        <br>
-        Very much inspired by <a href="https://themes.moe">Themes.moe</a> and motivated by its out of date state
+      <pre>localStorage.setItem( "name", JSON.stringify({ database: "MyAnimeList", ids: [1, 6] }))</pre>
+      <p>Valid entries in localStorage will show up when typing "l/" in the search bar. The userscript also saves all
+        the lists it fetches there.</p>
+      <h3>You could also just bookmark the search url i guess.</h3>
+
+
+      <p>Very much inspired by <a href="https://themes.moe">Themes.moe</a> and motivated by its out of date state
         (nothing added since winter 2022). This page is not affiliated but uses the <a
           href="https://api-docs.animethemes.moe">api</a> and videos provided for free by <a
-          href="https://animethemes.moe">AnimeThemes.moe</a>!
-
+          href="https://animethemes.moe">AnimeThemes.moe</a>!</p>
 
     </div>
   </main>
