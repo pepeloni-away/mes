@@ -91,35 +91,6 @@ function fillTable(animeData) {
         })
     }
 }
-// function handleToggleNameType() {
-//   this.names = 'full'
-
-//   const btn = document.querySelector('#first-toggle-btn')
-//   btn.addEventListener('change', toggle)
-
-//   function toggle() {
-//     const anchors = document.querySelectorAll('td:last-child > a')
-
-//     // anchors.forEach(a => {
-//       // const slug = a.getAttribute('slug')
-//       // const fullName = `${slug} - ${a.getAttribute('song_title')}`
-
-//     //   slug === a.textContent ? a.textContent = fullName : a.textContent = slug
-//     // })
-
-//     for (const a of anchors) {
-//       const slug = a.getAttribute('slug')
-//       const fullName = `${slug} - ${a.getAttribute('song_title')}`
-
-//       if (self.names === 'full') {
-//         a.textContent = slug
-//       } else {
-//         a.textContent = fullName
-//       }
-//     }
-//   }
-// }
-// handleToggleNameType()
 
 function suspendSearch() {
     const cover = document.querySelector(".loading_overlay")
