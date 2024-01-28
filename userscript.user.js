@@ -87,21 +87,50 @@ function fetchAnimelist(mode, name) {
 }
 
 function fetchMalList(name, infoElement=null, offset = 0, allIds = []) {
+  const cookies = localStorage.getItem('malCookie')
   const status = 2
   const url = `https://myanimelist.net/animelist/${name}/load.json?status=${status}&offset=${offset}`
+  const headers = {
+    // "Cookie": "MALSESSIONID=m4f43sdsfaf4g42g2naf6quuq7; MALHLOGSESSID=8a31a4543a680ba5112b6d8daa62263a",
+    "Host": "myanimelist.net",
+    "Referer": `https://myanimelist.net/animelist/${name}/load.json?status=${status}`,
+  }
+
+  if (cookies) {
+    const c = JSON.parse(cookies)
+    headers["Cookie"] = `MALSESSIONID=${c.c1}; MALHLOGSESSID=${c.c2}`
+  }
 
   GM_xmlhttpRequest({
     url: url,
-    headers: {
-      "Cookie": "MALSESSIONID=m4f43sdsfaf4g42g2naf6quuq7; MALHLOGSESSID=8a31a4543a680ba5112b6d8daa62263a",
-      "Host": "myanimelist.net",
-      "Referer": `https://myanimelist.net/animelist/${name}/load.json?status=${status}`,
-    },
+    headers: headers,
     onload: handleMalResponse
   })
 
   function handleMalResponse(responseObject) {
-    if (responseObject.status !== 200) return console.log("Failed to fetch mal user:", name, responseObject)
+    if (responseObject.responseHeaders.includes('MALSESSIONID')) {
+      console.log('setting mal cookie, shouldn\'t see this more than once')
+      infoElement && (infoElement.textContent = "setting mal cookie")
+
+      const sesId = responseObject.responseHeaders.match(/(?<=MALSESSIONID=)\w+/)?.[0]
+      const logId = responseObject.responseHeaders.match(/(?<=MALHLOGSESSID=)\w+/)?.[0]
+
+      if (sesId && logId) {
+        localStorage.setItem('malCookie', JSON.stringify({
+          c1: sesId,
+          c2: logId
+        }))
+      } else {
+        console.log('failed to set mal cookies')
+      }
+    }
+
+    if (responseObject.status !== 200) {
+      console.log("Failed to fetch mal user:", name, responseObject)
+      infoElement && (infoElement.textContent = `Failed to get ids from mal user`)
+      releaseSearch()
+      return
+    }
 
     const ids = JSON.parse(responseObject.responseText).map(o => o.anime_id)
     allIds = [...allIds, ...ids]
@@ -110,8 +139,8 @@ function fetchMalList(name, infoElement=null, offset = 0, allIds = []) {
 
     if (ids.length === 300) {
       const delay = Math.floor(Math.random() * 3000) + 1000
-      // return fetchMalList(name, offset + 300, allIds)
-      return setTimeout(fetchMalList, delay, name, infoElement, offset + 300, allIds)
+      return fetchMalList(name, infoElement, offset + 300, allIds)
+      // return setTimeout(fetchMalList, delay, name, infoElement, offset + 300, allIds)
     }
 
     const date = new Date()
