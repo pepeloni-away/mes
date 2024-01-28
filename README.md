@@ -2,18 +2,9 @@
 Mes is a website and userscript combo that takes a list of anime ids, their respective themes from [AnimeThemes](https://animethemes.moe/), and shows them to you in a simple table
 with minimal interface and mobile support.
 
-[Themes.moe](https://themes.moe/)* inspired this project, and its lack of mobile interface and updates since winter 2022 motivated it.
+[Themes.moe](https://themes.moe/) inspired this project, and its lack of mobile interface and updates since winter 2022 motivated it.
 
 Mes is a standalone project not affiliated with any of the sites or people mentioned in this readme.
-<br>
-<br>
-<br>
-
-> \* Themes.moe is actually dead as i'm writing my readme so here's an archived version for reference, since i'm not sure it is coming back: 
-> * [main page](http://web.archive.org/web/20240119155413/https://themes.moe/)
->  
-> * [table view](http://web.archive.org/web/20230627110905/https://themes.moe/list/mal/regalgiraffe) - the first table entry actually loads if you wait enough
-
 
 
 ## Usage
@@ -39,7 +30,7 @@ localStorage.setItem("name", JSON.stringify({
 }))
 ```
 
-Valid entries from localstorage will show up when you type `l/` in the search bar
+Valid entries from localstorage will show up when you type `l/` in the search bar.
 
 
 ## Why mes?
@@ -68,6 +59,8 @@ instead of deleting it.
 Mes is my first attempt with no prior experience at making a website from the ground up. I want to credit
 [moderncss.dev](https://moderncss.dev/) and its tldr version [smollcss.dev](https://smolcss.dev/), partly because i'm thankful and partly because i would like quicklinks to them in the future.
 Both are by Stephanie Eckles, and her [codepen](https://codepen.io/5t3ph) was also helpful.
+
+[css-tricks](https://css-tricks.com/) has some really nice guides that show side by side what css properties do for a container and for its content. I used the [flex](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) and [grid](https://css-tricks.com/snippets/css/complete-guide-grid/) guides a lot.
 
 There's a youtube comment i saw that suggested picking a random hsl color and bumping the hue a bit for every extra color you need. Blame him if my colors suck.
 
