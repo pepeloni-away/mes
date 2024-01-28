@@ -17,21 +17,20 @@ Mes is a standalone project not affiliated with any of the sites or people menti
 
 
 ## Usage
-You can use the [github project page](https://pepeloni-away.github.io/mes/) or clone the repo and open index.html in your browser (remember to modify the userscript's match rules if you do this).
+You can use the [github project page](https://pepeloni-away.github.io/mes/) or clone the repo and host it locally (remember to modify the userscript's match rules if you do this).
 
 The website alone will show you a table with themes for a list of anime ids you provide.
 > For example, https://pepeloni-away.github.io/mes/search?q=mid/1,6 will show themes for:  
 > https://myanimelist.net/anime/1/Cowboy_Bebop and https://myanimelist.net/anime/6/Trigun
 
-You can replace `mid/` with `aid/` for anilist ids and `kid/` for kitsu ids. To not exclude Kitsu users just becasue they don't have ids exposed in the urls, and because it was relatively easy to implement, 
-you can use `kis/` for kitsu slugs.
+You can replace `mid/` with `aid/` for anilist ids and `kid/` for kitsu ids.
 
-<sub>What even is a slug? -- It's the part after the last / in a url. `bakemonogatari` for https://kitsu.io/anime/bakemonogatari</sub>
-
-If you install the [userscript](https://github.com/pepeloni-away/mes/raw/master/userscript.user.js) you will be able to grab ids directly from popular trackers. [[[`only mal is supported right now`]]]
+If you install the [userscript](https://github.com/pepeloni-away/mes/raw/master/userscript.user.js) you will be able to grab ids directly from a user. [[[`only mal is supported right now`]]]
 > For example, https://pepeloni-away.github.io/mes/search?q=m/regalgiraffe will grab all ids for completed anime by MAL user regalgiraffe, cache them to your browser's localstorage,
 > and then show you a table with themes for them.
 
+You can replace `m/` with `a/` for anilist and `k/` for kitsu.
+\
 You can add lists to localstorage manually using your browser's console as well if you want, here's a template:
 ```
 localStorage.setItem("name", JSON.stringify({

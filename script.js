@@ -3,7 +3,6 @@ const placeholders = [
   "mid/malid(s)",
   "aid/anilistid(s)",
   "kid/kitsuid(s)",
-  "kis/kitsuslug(s)",
 ]
 
 function cyclePlaceholders() {
@@ -116,12 +115,7 @@ function isValidSearchObject(searchObject) {
   if (!databases.includes(searchObject.database)) return false
   if (!Array.isArray(searchObject.ids)) return false
   if (searchObject.ids.length < 1) return false
-
-  if (searchObject.kitsuSlugs) {
-    if (!searchObject.ids.every(e => typeof e === 'string')) return false
-  } else {
-    if (!searchObject.ids.every(Number.isInteger)) return false
-  }
+  if (!searchObject.ids.every(Number.isInteger)) return false
 
   return true
 }
@@ -169,7 +163,6 @@ navigateSuggestions()
 function parseSearchContent(text) {
   const searchObject = {}
   const parseIds = i => i.split(",").map(e => parseInt(e.trim()))
-  const parseKitsuSlugs = i => i.split(",").map(e => e.trim())
   
   if (text.startsWith("l/")) {
     const name = text.substring(2)
@@ -186,11 +179,6 @@ function parseSearchContent(text) {
   if (text.startsWith("kid/")) {
     searchObject.database = "Kitsu"
     searchObject.ids = parseIds(text.substring(4))
-  }
-  if (text.startsWith("kis/")) {
-    searchObject.database = "Kitsu"
-    searchObject.ids = parseKitsuSlugs(text.substring(4))
-    searchObject.kitsuSlugs = true
   }
 
   return searchObject
