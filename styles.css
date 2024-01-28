@@ -274,17 +274,66 @@ caption:has(~tbody:empty)>div {
 
   display: grid;
   gap: 1rem;
+  grid-template-rows: auto 3fr auto;
   grid-template-areas:
-    ". t . . i ."
-    ". v v v v ."
+    "t . . i"
+    "v v v v"
+    "f f f f"
 }
 
 .modal>div>.title {
   grid-area: t;
+  /* text-align: right; */
+  text-align: left;
 }
 
 .modal>div>.info {
   grid-area: i;
+  text-align: left;
+}
+
+.modal>div>div.versions {
+  grid-area: f;
+
+  /* flex doesn't center over the video on wide screens */
+  /* display: flex;
+  overflow: auto;
+  text-align: center;
+  justify-content: center; */
+
+  /* refer to https://smolcss.dev/#smol-scroll-snap and https://smolcss.dev/#smol-css-grid*/
+  /* Set up container positioning */
+
+  /* --min: 15ch; */
+
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min)), 1fr));
+  grid-gap: 1.5rem;
+  /* Enable overflow along our scroll axis */
+  overflow-x: auto;
+  /* Define axis and scroll type, where
+  `mandatory` means any scroll attempt will
+  cause a scroll to the next item */
+  scroll-snap-type: x mandatory;
+  padding: 0 0 .5rem;
+  /* -webkit-overflow-scrolling: touch; */
+}
+
+.modal>div>div.versions>a {
+  text-decoration: none;
+  color: inherit;
+
+  /* Choose how to align children on scroll */
+  scroll-snap-align: center;
+  /* Prevents scrolling past more than one child */
+  scroll-snap-stop: always;
+  padding: .4rem;
+  display: grid;
+  place-content: center;
+}
+.modal>div>div.versions>a.selected {
+  border: 2px solid var(--color2)
 }
 
 video {
@@ -294,6 +343,28 @@ video {
   max-height: min(100%, 70vh);
   justify-self: center;
 }
+
+/* @media screen and (max-height: 360px) { */
+@media screen and (max-height: 460px) {
+  .modal>div {
+    grid-template-areas:
+    "t . . i"
+    "f f v v"
+    "f f v v"
+  }
+
+  .modal>div>div.versions {
+    grid-auto-flow: row;
+    overflow-y: auto;
+    /* grid-template-rows: repeat(auto-fit, minmax(min(100%, var(--min)), 1fr)); */
+    padding-right: .4rem;
+  }
+
+  .modal>div>div.versions>a {
+    word-wrap: anywhere;
+  }
+}
+
 
 /* ----end modal---- */
 
