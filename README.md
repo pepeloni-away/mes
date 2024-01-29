@@ -16,7 +16,7 @@ The website alone will show you a table with themes for a list of anime ids you 
 
 You can replace `mid/` with `aid/` for anilist ids and `kid/` for kitsu ids.
 
-If you install the [userscript](https://github.com/pepeloni-away/mes/raw/master/userscript.user.js) you will be able to grab ids directly from a user. [[[`only mal is supported right now`]]]
+If you install the [userscript](https://github.com/pepeloni-away/mes/raw/master/userscript.user.js) you will be able to grab ids directly from a user.
 > For example, https://pepeloni-away.github.io/mes/search?q=m/regalgiraffe will grab all ids for completed anime by MAL user regalgiraffe, cache them to your browser's localstorage,
 > and then show you a table with themes for them.
 

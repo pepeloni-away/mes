@@ -13,8 +13,8 @@
 
 const additionalPlaceholders = [
   "m/malname",
-  // "a/anilistname",
-  // "k/kitsuname",
+  "a/anilistname",
+  "k/kitsuname",
 ]
 placeholders.push(...additionalPlaceholders)
 
@@ -62,10 +62,10 @@ search = new Proxy(search, {
     const searchObject = parseSearchContent(searchContent)
 
     if (isValidSearchObject(searchObject) && searchObject.userscriptAllowed) {
-        suspendSearch()
-        return fetchAnimelist(searchObject.mode, searchObject.name)
+      suspendSearch()
+      return fetchAnimelist(searchObject.mode, searchObject.name)
     }
-    
+
     return Reflect.apply(...arguments)
   }
 })
@@ -81,12 +81,12 @@ function fetchAnimelist(mode, name) {
   if (mode === "a") {
     fetchAnilistList(name, caption)
   }
-  if(mode === "k") {
+  if (mode === "k") {
     fetchKitsuList(name, caption)
   }
 }
 
-function fetchMalList(name, infoElement=null, offset = 0, allIds = []) {
+function fetchMalList(name, infoElement = null, offset = 0, allIds = []) {
   const cookies = localStorage.getItem('malCookie')
   const status = 2
   const url = `https://myanimelist.net/animelist/${name}/load.json?status=${status}&offset=${offset}`
@@ -156,20 +156,132 @@ function fetchMalList(name, infoElement=null, offset = 0, allIds = []) {
   }
 }
 
-function fetchAnilistList(name, infoElement) {
-  infoElement.textContent = 'getting list from anilist not implemented yet'
-  //https://api.animethemes.moe/anime?filter[has]=resources&filter[site]=Anilist&filter[external_id]=20923&include=resources,animethemes.animethemeentries.videos
-  console.log("getting list from anilist not implemented yet")
+function fetchAnilistList(name, infoElement, userId = null) {
+  if (!userId) return getUserId()
 
-  releaseSearch()
+  infoElement && (infoElement.textContent = `Getting ids from anilist`)
+
+  const status = 'Completed'
+  fetch("https://graphql.anilist.co/", {
+    "headers": {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    },
+    "body": `{\"query\":\"{MediaListCollection(userId: ${userId}, type: ANIME) {lists {name entries {mediaId}}}}\",\"variables\":null,\"operationName\":null}`,
+    "method": "POST",
+  })
+    .then(response => response.json())
+    .then(data => {
+      const list = data.data.MediaListCollection.lists.filter(e => e.name === status)[0]
+      const ids = list.entries.map(e => e.mediaId)
+
+      infoElement && (infoElement.textContent = `Got ${ids.length} ids from anilist`)
+
+      const date = new Date()
+      const o = {
+        database: "AniList",
+        ids: ids,
+        date: date.toString(),
+        epoch: date.getTime(),
+      }
+
+      localStorage.setItem(name, JSON.stringify(o))
+      getAnimethemes(o, document.querySelector('caption > p.themes_info'))
+    })
+    .catch(error => {
+      infoElement && (infoElement.textContent = `Failed to get anime ids from anilist`)
+      console.log("Failed to get anime ids from anilist", error)
+      releaseSearch()
+    })
+
+  function getUserId() {
+    fetch("https://graphql.anilist.co/", {
+      "headers": {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      "body": `{\"query\":\"{User(name: \\\"${name}\\\") {id name}}\",\"variables\":null,\"operationName\":null}`,
+      "method": "POST",
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.data.User) {
+          userId = data.data.User.id
+          fetchAnilistList(name, infoElement, userId)
+        } else {
+          infoElement && (infoElement.textContent = `Anilist user is private or doesn't exist`)
+          console.log(`Anilist user "${name}" is private or doesn't exist`, data)
+          releaseSearch()
+        }
+      })
+      .catch(error => {
+        infoElement && (infoElement.textContent = `Failed to get anilist user`)
+        console.log("Failed to get anilist user", error)
+        releaseSearch()
+      })
+  }
 }
-function fetchKitsuList(name, infoElement) {
-  infoElement.textContent = 'getting list from kitsu not implemented yet'
-  //https://api.animethemes.moe/anime?filter[has]=resources&filter[site]=Kitsu&filter[external_id]=3919&include=resources
-  console.log("getting list from kitsu not implemented yet")
 
+// kitsu has a very nice api that doesn't need to be in this userscript, maybe just leave mal here and move stuff to search.js
+// note that the api doesn't return R18 entries without auth, and they rate some non-hentai stuff as R18, like redo of healer
+function fetchKitsuList(name, infoElement = null, userId = null) {
+  if (!userId) return getUserId()
 
-  releaseSearch()
+  const status = 'completed'
+  const url = `https://kitsu.io/api/edge/library-entries?fields[users]=id&filter[user_id]=${userId}&filter[kind]=anime&filter[status]=${status}&fields[libraryEntries]=id,anime&include=anime&fields[anime]=id&page[limit]=500`
+  let allIds = []
+
+  function getFullResponse(url) {
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const ids = data.included.map(o => o.id)
+        allIds = [...allIds, ...ids]
+        infoElement && (infoElement.textContent = `Got ${allIds.length} ids from kitsu`)
+
+        if (data.links.next) {
+          getFullResponse(data.links.next)
+        } else {
+          const date = new Date()
+          const o = {
+            database: "Kitsu",
+            ids: allIds,
+            date: date.toString(),
+            epoch: date.getTime(),
+          }
+
+          localStorage.setItem(name, JSON.stringify(o))
+          getAnimethemes(o, document.querySelector('caption > p.themes_info'))
+        }
+      })
+      .catch(error => {
+        infoElement && (infoElement.textContent = `Failed to get anime ids from kitsu`)
+        console.log("Failed to get anime ids from kitsu", error)
+        releaseSearch()
+      })
+  }
+  getFullResponse(url)
+
+  function getUserId() {
+    const url = `https://kitsu.io/api/edge/users?filter[slug]=${name}&fields[users]=id`
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        if (data.meta.count === 0) {
+          infoElement && (infoElement.textContent = `Kitsu user is private or doesn't exist`)
+          console.log(`Kitsu user "${name}" is private or doesn't exist`)
+          releaseSearch()
+        } else {
+          userId = data.data[0].id
+          fetchKitsuList(name, infoElement, userId)
+        }
+      })
+      .catch(error => {
+        infoElement && (infoElement.textContent = `Failed to get kitsu user`)
+        console.log("Failed to get kitsu user", error)
+        releaseSearch()
+      })
+  }
 }
 
 
