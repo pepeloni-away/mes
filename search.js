@@ -69,6 +69,19 @@ function fillTable(animeData) {
 
   table.innerHTML = ''
 
+  animeData.sort((a, b) => {
+    const nameA = a.name.toLowerCase();
+    const nameB = b.name.toLowerCase();
+  
+    if (nameA < nameB) {
+      return -1 // Name A comes before Name B
+    }
+    if (nameA > nameB) {
+      return 1 // Name A comes after Name B
+    }
+    return 0 // Names are equal
+  })
+
   animeData.forEach(e => {
     table.append(makeRow(e.name, `${e.season} ${e.year}`, e.animethemes))
   })
