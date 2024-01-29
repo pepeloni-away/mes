@@ -224,6 +224,9 @@ function openVideo(anchor) {
 
   video.controls = true
   video.autoplay = true
+  if (localStorage.getItem('volume')) {
+    video.volume = localStorage.getItem('volume')
+  }
 
   title.className = "title"
   title.textContent = anchor.getAttribute("song_title")
@@ -241,6 +244,9 @@ function openVideo(anchor) {
   modal.firstChild.append(video, title, info, versions)
 
   video.src = anchor.href
+  video.onvolumechange = function() {
+    localStorage.setItem('volume', this.volume)
+  }
 
   // self.addEventListener("click", e => e.target === modal && (modal.remove()))
   // accept dead space around video as exit, happens when viewport height is small
