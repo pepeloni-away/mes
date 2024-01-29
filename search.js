@@ -280,7 +280,7 @@ function fetchAnilistList(name, infoElement, userId = null) {
       "Accept": "application/json",
       "Content-Type": "application/json",
     },
-    "body": `{\"query\":\"{MediaListCollection(userId: ${userId}, type: ANIME) {lists {name entries {mediaId}}}}\",\"variables\":null,\"operationName\":null}`,
+    "body": `{\"query\":\"{MediaListCollection(userId: ${userId}, type: ANIME, forceSingleCompletedList: true) {lists {name entries {mediaId}}}}\",\"variables\":null,\"operationName\":null}`,
     "method": "POST",
   })
     .then(response => response.json())
