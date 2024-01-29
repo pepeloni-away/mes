@@ -12,23 +12,25 @@ function search() {
 }
 
 function getAnimethemes(o, infoElement = null) {
-  // i think i shoould split ids into multiple calls.. can the url get too long with enough ids? works with my almost 600
-  const ids = o.ids.join()
-  const url = `https://api.animethemes.moe/anime?filter[has]=resources&filter[site]=${o.database}&filter[external_id]=${ids}&include=animethemes.animethemeentries.videos,animethemes.song&page[size]=100`
+  const url1 = `https://api.animethemes.moe/anime?filter[has]=resources&filter[site]=${o.database}&filter[external_id]=`
+  const url2 = `&include=animethemes.animethemeentries.videos,animethemes.song&page[size]=100`
+  const ratelimit = 80 // the rate limit is 90 requests per minute
+  const minTimeBewteenRequestsInMs = 60 / ratelimit * 1000
   let fullResponse = []
+  let lastDate
 
-  function getResponse(url) {
+  function getResponse(url, moreToCome = false) {
     fetch(url)
       .then(response => response.json())
       .then(data => {
-        // console.log(data)
         fullResponse = [...fullResponse, ...data.anime]
         infoElement && (infoElement.textContent = `Found ${fullResponse.length} themes`)
         if (data.links.next) {
           getResponse(data.links.next)
         } else {
-          // console.log("final data", fullResponse)
+          if (moreToCome) return getResponseInChunks()
           releaseSearch()
+
           fillTable(fullResponse)
         }
       })
@@ -38,7 +40,23 @@ function getAnimethemes(o, infoElement = null) {
         releaseSearch()
       })
   }
-  getResponse(url)
+  // getResponse(url)
+  o.ids.length > 600 ? getResponseInChunks() : getResponse(url1 + o.ids.join() + url2)
+
+  function getResponseInChunks() {
+    const ids = o.ids.splice(0, 100)
+    const date = new Date()
+    const send = _ => o.ids.length > 0 ? getResponse(url1 + ids + url2, true) : getResponse(url1 + ids + url2)
+    if (lastDate && date.getTime() - lastDate.getTime() < minTimeBewteenRequestsInMs) {
+      // from my tests this is not needed since 90 requests of this kind per miniute aren't possible with the average response time
+      // but maybe i'm rate limited since i spammed the api while working on this project
+      // console.log(date.getTime() - lastDate.getTime())
+      setTimeout(send, minTimeBewteenRequestsInMs - (date.getTime() - lastDate.getTime()))
+    } else {
+      send()
+    }
+    lastDate = date
+  }
 }
 
 function fillTable(animeData) {
@@ -71,7 +89,26 @@ function fillTable(animeData) {
     return animethemesObj.map(e => {
       const a = document.createElement("a")
       a.setAttribute("slug", e.slug)
-      a.setAttribute("song_title", e.song.title)
+      // https://animethemes.moe/anime/magia_record_mahou_shoujo_madoka_magica_gaiden_tv_final_season_asaki_yume_no_akatsuki
+      // this doesn't have song info yet
+      const title = e?.song?.title || '[T.B.A]'
+
+      // why is Nurarihyon no Mago OVA's animethemeentries object empty???
+      // https://animethemes.moe/anime/nurarihyon_no_mago_ova
+
+      // why does Hirogaru Sky! Precure have an animethemeenrty with an empty video array????
+      // https://animethemes.moe/anime/hirogaru_sky_precure
+      if (e.animethemeentries.length === 0 || e.animethemeentries[0].videos.length === 0) {
+        a.object = {
+          animethemesObj: animethemesObj,
+          problem: e,
+        }
+        a.classList = 'broken'
+        a.style.display = 'none'
+        return a
+      }
+
+      a.setAttribute("song_title", title)
       a.setAttribute("episodes", e.animethemeentries[0].episodes)
       a.setAttribute("nsfw", e.animethemeentries[0].nsfw)
       a.setAttribute("notes", e.animethemeentries[0].notes)
@@ -80,7 +117,7 @@ function fillTable(animeData) {
       a.versions = makeVersions(e.animethemeentries).map(setClickEventListener)
 
       // a.innerText = e.slug
-      a.innerText = `${e.slug} - ${e.song.title}`
+      a.innerText = `${e.slug} - ${title}`
       a.href = e.animethemeentries[0].videos[0].link
 
       a.draggable = false
@@ -94,33 +131,33 @@ function fillTable(animeData) {
   }
   function makeVersions(animethemeentry) {
     return animethemeentry.flatMap(e => {
-        return e.videos.map(v => {
-            const a = document.createElement('a')
-            a.textContent = v.basename
-            a.href = v.link
+      return e.videos.map(v => {
+        const a = document.createElement('a')
+        a.textContent = v.basename
+        a.href = v.link
 
-            if (e.episodes) {
-                a.textContent += ` [ep${e.episodes}]`
-            }
-            if (e.nsfw) {
-                a.textContent += ' [nsfw]'
-            }
-            if (e.spoiler) {
-                a.textContnent += ' [spoiler]'
-            }
-            if (v.lyrics) {
-                a.textContent += ' [lyrics]'
-            }
-            if (v.uncen) {
-                a.textContent += ' [uncen]'
-            }
-            if (v.tags) {
-                a.textContent += ` [${v.tags}]`
-            }
-            return a
-        })
+        if (e.episodes) {
+          a.textContent += ` [ep${e.episodes}]`
+        }
+        if (e.nsfw) {
+          a.textContent += ' [nsfw]'
+        }
+        if (e.spoiler) {
+          a.textContnent += ' [spoiler]'
+        }
+        if (v.lyrics) {
+          a.textContent += ' [lyrics]'
+        }
+        if (v.uncen) {
+          a.textContent += ' [uncen]'
+        }
+        if (v.tags) {
+          a.textContent += ` [${v.tags}]`
+        }
+        return a
+      })
     })
-}
+  }
   function setClickEventListener(anchor) {
     anchor.addEventListener('click', e => {
       e.preventDefault()
@@ -136,6 +173,8 @@ function fillTable(animeData) {
     })
     return anchor
   }
+  const broken = document.querySelectorAll('a.broken')
+  broken && console.log('broken', broken)
 }
 
 function suspendSearch() {
