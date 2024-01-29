@@ -1,8 +1,12 @@
+const externalSearchOptions = ["a", "k"]
 const placeholders = [
   "l/localname",
   "mid/malid(s)",
   "aid/anilistid(s)",
   "kid/kitsuid(s)",
+
+  "a/anilistname",
+  "k/kitsuname",
 ]
 
 function cyclePlaceholders() {
@@ -106,6 +110,10 @@ function isLocalnameValid(localstorageKey) {
   return isValidSearchObject(t)
 }
 function isValidSearchObject(searchObject) {
+  if (searchObject.externalSearch) {
+    return true
+  }
+
   const databases = [
     "MyAnimeList",
     "AniList",
@@ -179,6 +187,12 @@ function parseSearchContent(text) {
   if (text.startsWith("kid/")) {
     searchObject.database = "Kitsu"
     searchObject.ids = parseIds(text.substring(4))
+  }
+
+  if (externalSearchOptions.includes(text[0]) && text[1] === '/' && text[2]) {
+    searchObject.externalSearch = true
+    searchObject.name = text.substring(2)
+    searchObject.mode = text[0]
   }
 
   return searchObject
