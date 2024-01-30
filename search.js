@@ -218,9 +218,15 @@ function checkURLForQuery() {
     const searchQuery = urlParams.get('q');
 
     searchInput.value = searchQuery;
+    updateTitle(searchQuery)
     search()
   }
 };
+
+function updateTitle(text) {
+  const query = text.length > 25 ? text.slice(0, 25) + '...' : text
+  document.title = query + " - Mes"
+}
 
 window.addEventListener('DOMContentLoaded', checkURLForQuery);
 
