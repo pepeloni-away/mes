@@ -222,8 +222,13 @@ caption:has(~tbody:empty)>div {
   th, td {
       display: block;
       width: 100%;
-
   }
+
+  /* td[season] {
+    position: sticky;
+    top: 0;
+    background-color: var(--color1);
+  } */
   
   td:first-child{
       display: flex;
