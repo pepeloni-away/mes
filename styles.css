@@ -237,6 +237,8 @@ caption:has(~tbody:empty)>div {
       background-color: var(--dark);
 /*         float: right; */
       margin-left: auto;
+      display: grid;
+      place-content: center;
   }
   
   td:nth-child(2), th:nth-child(2) {
