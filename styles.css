@@ -217,11 +217,23 @@ caption:has(~tbody:empty)>div {
   display: none;
 } */
 
+.themes_info:has(:first-child:empty) {
+  display: none;
+}
+
+.themes_info>a {
+  /* text-decoration: none;
+  color: var(--color3); */
+  color: inherit;
+}
+
 /* table on mobile */
 @media screen and (max-width: 600px) {
-  th, td {
-      display: block;
-      width: 100%;
+
+  th,
+  td {
+    display: block;
+    width: 100%;
   }
 
   /* td[season] {
@@ -229,28 +241,30 @@ caption:has(~tbody:empty)>div {
     top: 0;
     background-color: var(--color1);
   } */
-  
-  td:first-child{
-      display: flex;
+
+  td:first-child {
+    display: flex;
   }
 
   td:first-child:after {
-      content: attr(season);
-      white-space: nowrap;
-      word-break: keep-all;
-      padding: .1rem;
-      background-color: var(--dark);
-/*         float: right; */
-      margin-left: auto;
-      display: grid;
-      place-content: center;
+    content: attr(season);
+    white-space: nowrap;
+    word-break: keep-all;
+    padding: .1rem;
+    background-color: var(--dark);
+    /*         float: right; */
+    margin-left: auto;
+    display: grid;
+    place-content: center;
   }
-  
-  td:nth-child(2), th:nth-child(2) {
-      display: none;
+
+  td:nth-child(2),
+  th:nth-child(2) {
+    display: none;
   }
-  
+
 }
+
 /* ----end mobile table ---- */
 
 
@@ -339,6 +353,7 @@ caption:has(~tbody:empty)>div {
   display: grid;
   place-content: center;
 }
+
 .modal>div>div.versions>a.selected {
   border: 2px solid var(--color2)
 }
@@ -355,9 +370,9 @@ video {
 @media screen and (max-height: 460px) {
   .modal>div {
     grid-template-areas:
-    "t . . i"
-    "f f v v"
-    "f f v v"
+      "t . . i"
+      "f f v v"
+      "f f v v"
   }
 
   .modal>div>div.versions {

@@ -1,6 +1,6 @@
 function search() {
   const searchContent = document.querySelector(".search_input").value
-  const caption = document.querySelector('caption > p.themes_info')
+  const caption = document.querySelector('caption > p.themes_info > span')
   const searchObject = parseSearchContent(searchContent)
 
   if (!isValidSearchObject(searchObject)) {
@@ -29,7 +29,7 @@ function getAnimethemes(o, infoElement = null) {
       .then(response => response.json())
       .then(data => {
         fullResponse = [...fullResponse, ...data.anime]
-        infoElement && (infoElement.textContent = `Found ${fullResponse.length} themes`)
+        infoElement && (infoElement.textContent = `Found ${fullResponse.length} theme(s) on`)
         if (data.links.next) {
           getResponse(data.links.next)
         } else {
@@ -40,7 +40,7 @@ function getAnimethemes(o, infoElement = null) {
         }
       })
       .catch(error => {
-        infoElement && (infoElement.textContent = `Failed to get themes`)
+        infoElement && (infoElement.textContent = `Failed to get theme(s) from`)
         console.log("getanimethemes fetch error", error)
         releaseSearch()
       })
@@ -301,7 +301,7 @@ function fetchAnilistList(name, infoElement, userId = null) {
       const list = data.data.MediaListCollection.lists.filter(e => e.name === status)[0]
       const ids = list.entries.map(e => e.mediaId)
 
-      infoElement && (infoElement.textContent = `Got ${ids.length} ids from anilist`)
+      infoElement && (infoElement.textContent = `Got ${ids.length} id(s) from anilist`)
 
       const date = new Date()
       const o = {
@@ -312,7 +312,7 @@ function fetchAnilistList(name, infoElement, userId = null) {
       }
 
       localStorage.setItem(name, JSON.stringify(o))
-      getAnimethemes(o, document.querySelector('caption > p.themes_info'))
+      getAnimethemes(o, document.querySelector('caption > p.themes_info > span'))
     })
     .catch(error => {
       infoElement && (infoElement.textContent = `Failed to get anime ids from anilist`)
@@ -361,7 +361,7 @@ function fetchKitsuList(name, infoElement = null, userId = null) {
       .then(data => {
         const ids = data.included.map(o => o.id)
         allIds = [...allIds, ...ids]
-        infoElement && (infoElement.textContent = `Got ${allIds.length} ids from kitsu`)
+        infoElement && (infoElement.textContent = `Got ${allIds.length} id(s) from kitsu`)
 
         if (data.links.next) {
           getFullResponse(data.links.next)
@@ -375,7 +375,7 @@ function fetchKitsuList(name, infoElement = null, userId = null) {
           }
 
           localStorage.setItem(name, JSON.stringify(o))
-          getAnimethemes(o, document.querySelector('caption > p.themes_info'))
+          getAnimethemes(o, document.querySelector('caption > p.themes_info > span'))
         }
       })
       .catch(error => {

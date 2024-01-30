@@ -85,7 +85,7 @@ function fetchMalList(name, infoElement = null, offset = 0, allIds = []) {
     const ids = JSON.parse(responseObject.responseText).map(o => o.anime_id)
     allIds = [...allIds, ...ids]
 
-    infoElement && (infoElement.textContent = `Got ${allIds.length} ids from mal`)
+    infoElement && (infoElement.textContent = `Got ${allIds.length} id(s) from mal`)
 
     if (ids.length === 300) {
       const delay = Math.floor(Math.random() * 3000) + 1000
@@ -102,6 +102,6 @@ function fetchMalList(name, infoElement = null, offset = 0, allIds = []) {
     }
 
     localStorage.setItem(name, JSON.stringify(o))
-    getAnimethemes(o, document.querySelector('caption > p.themes_info'))
+    getAnimethemes(o, document.querySelector('caption > p.themes_info > span'))
   }
 }
