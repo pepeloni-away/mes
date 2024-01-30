@@ -213,8 +213,6 @@ function submitSearchForm() {
   const query = form.querySelector('[name="q"]').value.trim()
 
   if (isValidSearchObject(parseSearchContent(query))) {
-    // var url = '/search?q=' + query;
-  // const url = '/search.html?q=' + query
   const url = location.hostname.endsWith('.github.io') ? '/mes/search?q=' + query : '/search.html?q=' + query
 
   window.location.href = url

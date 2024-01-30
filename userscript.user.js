@@ -3,7 +3,7 @@
 // @namespace   https://github.com/pepeloni-away
 // @author      pploni
 // @insert-into page
-// @version     2.0
+// @version     2.1
 // @description allow mes to fetch anime ids from trackers with stricter apis
 // @grant       GM_xmlhttpRequest
 // @match       https://pepeloni-away.github.io/mes/*
@@ -22,7 +22,7 @@ externalSearchOptions.push(...additionalExternalSearchOptions)
 
 // patch fetchAnimelist from search.js
 if (!location.pathname.includes('/search')) return     // mind this if you decide to add anything other than functions below
-fetchAnimelist = new Proxy(fetchAnilistList, {
+fetchAnimelist = new Proxy(fetchAnimelist, {
   apply(target, thisArg, args) {
     const mode = args[0]
     const name = args[1]
@@ -30,8 +30,10 @@ fetchAnimelist = new Proxy(fetchAnilistList, {
     const caption = document.querySelector('caption > p.tracker_info')
 
     if (mode === 'm') {
-      fetchMalList(name, caption)
+      return fetchMalList(name, caption)
     }
+
+    return Reflect.apply(...arguments)
   }
 })
 // end search.js patch

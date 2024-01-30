@@ -288,7 +288,7 @@ function fetchAnimelist(mode, name) {
   }
 }
 
-function fetchAnilistList(name, infoElement, userId = null) {
+function fetchAnilistList(name, infoElement = null, userId = null) {
   if (!userId) return getUserId()
 
   infoElement && (infoElement.textContent = `Getting ids from anilist`)
@@ -356,6 +356,8 @@ function fetchAnilistList(name, infoElement, userId = null) {
 // note that the kitsu api doesn't return R18 entries without auth, and they rate some non-hentai stuff as R18, like redo of healer
 function fetchKitsuList(name, infoElement = null, userId = null) {
   if (!userId) return getUserId()
+
+  infoElement && (infoElement.textContent = `Getting ids from kitsu`)
 
   const status = 'completed'
   const url = `https://kitsu.io/api/edge/library-entries?fields[users]=id&filter[user_id]=${userId}&filter[kind]=anime&filter[status]=${status}&fields[libraryEntries]=id,anime&include=anime&fields[anime]=id&page[limit]=500`
