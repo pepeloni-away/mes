@@ -72,7 +72,7 @@ function fillTable(animeData) {
   animeData.sort((a, b) => {
     const nameA = a.name.toLowerCase();
     const nameB = b.name.toLowerCase();
-  
+
     if (nameA < nameB) {
       return -1 // Name A comes before Name B
     }
@@ -240,6 +240,8 @@ function makeModal() {
   return div1
 }
 function openVideo(anchor) {
+  // const initialMaxScroll = document.documentElement.scrollTopMax
+  const initialMaxScroll = getMaxScroll()
   const modal = makeModal()
   const video = document.createElement("video")
   const title = document.createElement('p')
@@ -268,13 +270,33 @@ function openVideo(anchor) {
   modal.firstChild.append(video, title, info, versions)
 
   video.src = anchor.href
-  video.onvolumechange = function() {
+  video.onvolumechange = function () {
     localStorage.setItem('volume', this.volume)
   }
 
-  // self.addEventListener("click", e => e.target === modal && (modal.remove()))
-  // accept dead space around video as exit, happens when viewport height is small
-  self.addEventListener("click", e => (e.target === modal || e.target === modal.firstChild) && (modal.remove()))
+  self.addEventListener("click", e => {
+    if (e.target === modal || e.target === modal.firstChild) {
+      const maxScroll = getMaxScroll()
+      if (!(initialMaxScroll === maxScroll)) { // moved from portrait to landscape or the other way around
+        // firefox android kinda loses what you were watching when changing orientation, bring it back into view
+        anchor.focus({ focusVisible: true })
+      }
+
+      modal.remove()
+    }
+  })
+
+  function getMaxScroll() {
+    // what the fuck man
+    return Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight,
+      document.body.clientHeight,
+      document.documentElement.clientHeight
+    ) - window.innerHeight
+  }
 }
 
 function fetchAnimelist(mode, name) {
