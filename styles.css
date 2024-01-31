@@ -58,6 +58,55 @@ body:has(.modal) {
 main {
   padding: 1.5rem clamp(1rem, 5%, 3rem);
   color: var(--white);
+
+  position: relative;
+
+  --button_size: 1rem;
+  --min-bottom: calc(1.5rem + 2px);
+}
+
+.back_to_top {
+  position: fixed;
+  right: 0;
+  /* dont go lower than the table; td has 2px border bottom (and all around but irrelevant) */
+  bottom: var(--min-bottom);
+  /* half of main padding, to fit nicely to the side of the table */
+  /* padding: clamp(.5rem, 2.5%, 1.5rem); */
+  /* padding: 3rem clamp(.5rem, 2.5%, 1.5rem); */
+  padding: var(--button_size) clamp(.5rem, 2.5%, 1.5rem);
+  border: 1px solid var(--color3);
+  display: grid;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.back_to_top:after {
+  /* content: '\25b2'; */
+  position: absolute;
+
+  place-self: center;
+  border-left: 10px solid transparent;
+  border-bottom: 10px solid var(--color3);
+  border-right: 10px solid transparent;
+  content: '';
+}
+
+.options {
+  position: fixed;
+  right: 0;
+  bottom: calc(var(--min-bottom) + 2 * var(--button_size));
+  padding: var(--button_size) clamp(.5rem, 2.5%, 1.5rem);
+  border: 1px solid var(--color3);
+  display: grid;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.options:after {
+  position: absolute;
+  place-self: center;
+  content: '...';
+  font-size: 16px;
 }
 
 
@@ -261,6 +310,10 @@ caption:has(~tbody:empty)>div {
   td:nth-child(2),
   th:nth-child(2) {
     display: none;
+  }
+
+  main {
+    --button_size: 3rem;
   }
 
 }

@@ -437,3 +437,32 @@ function fetchKitsuList(name, infoElement = null, userId = null) {
       })
   }
 }
+
+function overlayButtons() {
+  const backToTop = document.querySelector('.back_to_top')
+  const options = document.querySelector('.options')
+  let lastScrollPosition
+
+  backToTop.addEventListener('click', backToTopHandler)
+  options.addEventListener('click', optionsHandler)
+
+  function backToTopHandler() {
+    const currentScrollPosition = document.documentElement.scrollTop
+
+    if (currentScrollPosition < 100 && lastScrollPosition) {
+      return document.documentElement.scrollTo({
+        top: lastScrollPosition,
+        left: 0,
+        behavior: "smooth"
+      })
+    }
+
+    document.querySelector('header').scrollIntoView({ behavior: 'smooth' })
+    lastScrollPosition = currentScrollPosition
+  }
+
+  function optionsHandler() {
+
+  }
+}
+overlayButtons()
