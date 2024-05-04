@@ -54,6 +54,8 @@ I like to tweak sites to fit my needs with userscripts. I've spent a few days fa
 I ended up with a userscript that grabs id's from a user's mal, gets their respective themes from AnimeThemes and merges it with Themes.moe's api response. I opted to try and make a website for this userscript
 instead of deleting it.
 
+Edit: I actually figured out the initial userscript as well, https://github.com/pepeloni-away/userscripts/blob/main/themes.moe-updater.user.js
+
 
 
 
