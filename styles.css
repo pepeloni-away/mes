@@ -329,69 +329,44 @@ caption:has(~tbody:empty)>div {
 
 /* modal */
 .modal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+/*     align-items: center; */
+    justify-content: center;
+    overflow-y: auto;
+	scrollbar-gutter: stable;
 }
 
-.modal>div {
-  max-width: 85%;
-  max-height: 80%;
-  min-height: 15%;
-  min-width: 15%;
-
-  display: grid;
-  gap: 1rem;
-  grid-template-rows: auto 3fr auto;
-  grid-template-areas:
-    "t . . i"
-    "v v v v"
-    "f f f f"
+.modal > div {
+    display: grid;
+    grid-template-rows: auto;
+    align-content: start;
+    grid-template-columns: 1fr 4fr 1fr;
+    grid-template-areas:
+		". title ."
+        ". info ."
+        ". video ."
+        ". versions .";
+    gap: 1rem;
 }
 
 .modal>div>.title {
-  grid-area: t;
-  /* text-align: right; */
-  text-align: left;
+    grid-area: title;
+	padding-top: 2rem;
 }
 
 .modal>div>.info {
-  grid-area: i;
-  text-align: left;
+    grid-area: info;
+    height: fit-content;
 }
 
 .modal>div>div.versions {
-  grid-area: f;
-
-  /* flex doesn't center over the video on wide screens */
-  /* display: flex;
-  overflow: auto;
-  text-align: center;
-  justify-content: center; */
-
-  /* refer to https://smolcss.dev/#smol-scroll-snap and https://smolcss.dev/#smol-css-grid*/
-  /* Set up container positioning */
-
-  /* --min: 15ch; */
-
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min)), 1fr));
-  grid-gap: 1.5rem;
-  /* Enable overflow along our scroll axis */
-  overflow-x: auto;
-  /* Define axis and scroll type, where
-  `mandatory` means any scroll attempt will
-  cause a scroll to the next item */
-  scroll-snap-type: x mandatory;
-  padding: 0 0 .5rem;
-  /* -webkit-overflow-scrolling: touch; */
+    display: grid;
+    grid-area: versions;
+    height: fit-content;
+	padding-bottom: 2rem;
 }
 
 .modal>div>div.versions>a {
@@ -412,7 +387,7 @@ caption:has(~tbody:empty)>div {
 }
 
 video {
-  grid-area: v;
+  grid-area: video;
   object-fit: contain;
   max-width: 100%;
   max-height: min(100%, 70vh);
@@ -420,24 +395,10 @@ video {
 }
 
 /* @media screen and (max-height: 360px) { */
-@media screen and (max-height: 460px) {
-  .modal>div {
-    grid-template-areas:
-      "t . . i"
-      "f f v v"
-      "f f v v"
-  }
-
-  .modal>div>div.versions {
-    grid-auto-flow: row;
-    overflow-y: auto;
-    /* grid-template-rows: repeat(auto-fit, minmax(min(100%, var(--min)), 1fr)); */
-    padding-right: .4rem;
-  }
-
-  .modal>div>div.versions>a {
-    word-wrap: anywhere;
-  }
+@media (orientation: portrait) {
+	.modal > div {
+		align-content: center;
+	}
 }
 
 
